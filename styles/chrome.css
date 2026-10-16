@@ -1,0 +1,117 @@
+/* ---------- top meta bar ---------- */
+
+.metabar-top {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 85;
+  height: var(--bar-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--hairline);
+}
+.metabar-name {
+  font-weight: 750;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.clock-colon {
+  animation: blink 2s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- dock ---------- */
+
+.dock-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 80;
+  translate: -50% 0;
+}
+.dock {
+  --d: 7px;
+  --size: clamp(30px, calc((100vw - 130px) / 8), 44px);
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(4px, 1.2vw, 10px);
+  padding: 8px clamp(8px, 1.6vw, 12px);
+  margin: 0;
+  list-style: none;
+}
+.dock-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dock-btn {
+  --d: 4px;
+  display: grid;
+  place-items: center;
+  width: calc(var(--size) * var(--s, 1));
+  height: calc(var(--size) * var(--s, 1));
+  border-radius: 32%;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    width 140ms var(--ease-out),
+    height 140ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+.dock-btn svg {
+  width: calc(var(--size) * 0.45 * var(--s, 1));
+  height: calc(var(--size) * 0.45 * var(--s, 1));
+  transition: inherit;
+}
+.dock-tip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  translate: -50% 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--ink-inverse);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 120ms var(--ease-out),
+    translate 160ms var(--ease-out);
+}
+.dock-btn:hover .dock-tip,
+.dock-btn:focus-visible .dock-tip {
+  opacity: 1;
+  translate: -50% 0;
+}
+.dock-dot {
+  width: 4px;
+  height: 4px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 200ms;
+}
+.dock-dot[data-on='true'] {
+  background: var(--ink);
+}
+:root[data-theme='dark'] .dock-dot[data-on='true'] {
+  background: var(--riso-yellow);
+}
+.dock-sep {
+  align-self: center;
+  width: 1px;
+  height: calc(var(--size) * 0.7);
+  margin-bottom: 8px;
+  background: var(--hairline);
+}
+@media (pointer: coarse) {
+  .dock-tip {
+    display: none;
+  }
+}
