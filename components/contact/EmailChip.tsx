@@ -16,7 +16,6 @@ export function EmailChip() {
         type="button"
         className="email-chip soft is-hoverable is-pressable magnetic"
         data-cursor="copy"
-        aria-label={`${contact.copy}: ${profile.email}`}
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(profile.email)

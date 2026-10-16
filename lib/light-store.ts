@@ -1,5 +1,14 @@
-// One global light source tied to the pointer. Writes lerped --lx/--ly (-1..1) on :root
-// and exposes the same values to the 3D scene, so CSS shadows and WebGL share a light.
+// One global light source. Two outputs, because they cost very different amounts:
+//
+//  - parallax (--px/--py) is written every frame, but only onto registered elements (the hero
+//    collage). Restyling one subtree of transformed scraps is cheap.
+//  - the shared light (--lx/--ly on :root) drives every neomorphic shadow and specular. Writing
+//    it restyles and repaints the whole page, so it moves per frame only with a fine pointer.
+//    On touch it follows the gyro coarsely (big steps, a couple of times a second). Without a gyro
+//    the collage drifts via a CSS animation on `translate` (compositor-only, data-drift below).
+//    A JS drift writing vars cost ~6.8s of blocking per 8s on a 4x-throttled phone.
+//
+// The 3D scene reads getLight(), so CSS shadows and WebGL share one light either way.
 
 type Light = { x: number; y: number }
 
@@ -7,8 +16,11 @@ const REST: Light = { x: -0.35, y: -0.45 }
 const target: Light = { ...REST }
 const current: Light = { ...REST }
 let raf = 0
-let lastWrite = { x: NaN, y: NaN }
+let lastRoot = { x: NaN, y: NaN, t: 0 }
+let coarse = false
+let drifting = false
 const listeners = new Set<() => void>()
+const parallax = new Set<HTMLElement>()
 
 export const getLight = (): Light => current
 
@@ -19,19 +31,37 @@ export function subscribeLight(fn: () => void) {
   }
 }
 
-function write() {
-  if (Math.abs(current.x - lastWrite.x) < 0.002 && Math.abs(current.y - lastWrite.y) < 0.002) return
+/** Elements that read --px/--py (parallax). Written every frame while the light moves. */
+export function registerParallax(el: HTMLElement) {
+  parallax.add(el)
+  el.dataset.drift = String(drifting)
+  el.style.setProperty('--px', current.x.toFixed(3))
+  el.style.setProperty('--py', current.y.toFixed(3))
+  return () => {
+    parallax.delete(el)
+  }
+}
+
+function write(now: number) {
+  for (const el of parallax) {
+    el.style.setProperty('--px', current.x.toFixed(3))
+    el.style.setProperty('--py', current.y.toFixed(3))
+  }
+  const dx = Math.abs(current.x - lastRoot.x)
+  const dy = Math.abs(current.y - lastRoot.y)
+  const due = coarse ? (dx > 0.12 || dy > 0.12) && now - lastRoot.t > 500 : dx > 0.002 || dy > 0.002
+  if (!due && !Number.isNaN(lastRoot.x)) return
   const s = document.documentElement.style
   s.setProperty('--lx', current.x.toFixed(3))
   s.setProperty('--ly', current.y.toFixed(3))
-  lastWrite = { x: current.x, y: current.y }
+  lastRoot = { x: current.x, y: current.y, t: now }
   listeners.forEach((fn) => fn())
 }
 
-function tick() {
+function tick(now: number) {
   current.x += (target.x - current.x) * 0.12
   current.y += (target.y - current.y) * 0.12
-  write()
+  write(now)
   if (Math.abs(target.x - current.x) > 0.001 || Math.abs(target.y - current.y) > 0.001) {
     raf = requestAnimationFrame(tick)
   } else {
@@ -45,10 +75,16 @@ export function setLightTarget(x: number, y: number) {
   if (!raf) raf = requestAnimationFrame(tick)
 }
 
+function setDrift(on: boolean) {
+  drifting = on
+  for (const el of parallax) el.dataset.drift = String(on)
+}
+
 export function initLight() {
   const cleanups: (() => void)[] = []
   const fine = window.matchMedia('(pointer: fine)').matches
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  coarse = !fine
 
   if (fine) {
     const onMove = (e: PointerEvent) => {
@@ -58,27 +94,30 @@ export function initLight() {
     window.addEventListener('pointermove', onMove, { passive: true })
     cleanups.push(() => window.removeEventListener('pointermove', onMove))
   } else if (!reduced) {
-    // Touch: use the gyro where it needs no permission prompt; otherwise a slow idle drift.
+    // Touch: the gyro where it needs no permission prompt; otherwise a slow idle drift.
     const needsPermission =
       typeof DeviceOrientationEvent !== 'undefined' &&
       typeof (DeviceOrientationEvent as unknown as { requestPermission?: unknown }).requestPermission === 'function'
-    let gotGyro = false
     if (!needsPermission && 'DeviceOrientationEvent' in window) {
       const onTilt = (e: DeviceOrientationEvent) => {
         if (e.gamma == null || e.beta == null) return
-        gotGyro = true
         setLightTarget(e.gamma / 35, (e.beta - 45) / 35)
       }
       window.addEventListener('deviceorientation', onTilt, { passive: true })
       cleanups.push(() => window.removeEventListener('deviceorientation', onTilt))
     }
-    const start = performance.now()
-    const id = window.setInterval(() => {
-      if (gotGyro || document.hidden) return
-      const t = (performance.now() - start) / 1000
-      setLightTarget(Math.sin(t * 0.35) * 0.7, Math.cos(t * 0.27) * 0.5 - 0.2)
-    }, 1000 / 15)
-    cleanups.push(() => window.clearInterval(id))
+    // no gyro (yet): CSS idle drift on the compositor until the first orientation event
+    setDrift(true)
+    const stopDrift = (e: DeviceOrientationEvent) => {
+      if (e.gamma == null || e.beta == null) return // some browsers fire one empty event
+      setDrift(false)
+      window.removeEventListener('deviceorientation', stopDrift)
+    }
+    window.addEventListener('deviceorientation', stopDrift, { passive: true })
+    cleanups.push(() => {
+      window.removeEventListener('deviceorientation', stopDrift)
+      setDrift(false)
+    })
   }
 
   return () => {

@@ -15,9 +15,7 @@ export function IndexSection() {
         </div>
 
         <div className="section-head">
-          <span className="ghost-word" aria-hidden>
-            INDEX
-          </span>
+          <span className="ghost-word" data-text="INDEX" aria-hidden />
           <h2 className="h-section relative">
             index
             <BrushStroke className="section-brush" />

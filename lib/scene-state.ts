@@ -22,5 +22,6 @@ export function markSceneChunk() {
 export function markSceneReady() {
   if (sceneMilestones.ready) return
   sceneMilestones.requested = sceneMilestones.chunk = sceneMilestones.ready = true
+  document.documentElement.dataset.sceneReady = 'true'
   window.dispatchEvent(new Event('vpr:scene-ready'))
 }

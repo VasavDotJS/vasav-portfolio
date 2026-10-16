@@ -40,7 +40,7 @@ export function Keyboard() {
 
   return (
     <div className="keyboard-wrap">
-      <output className="lcd soft-well mono" aria-live="polite">
+      <output id="stack-lcd" className="lcd soft-well mono" aria-live="polite">
         {key ? (
           <>
             <span className="lcd-key">{key.label}</span>
@@ -59,10 +59,11 @@ export function Keyboard() {
               <Keycap
                 key={k.id}
                 legend={k.legend ?? k.label}
+                name={k.label}
                 sub={k.kind === 'language' ? 'lang' : ''}
                 w={k.w}
                 active={active === k.id}
-                aria-label={`${k.label}, used in ${k.usedIn.join(', ')}`}
+                aria-controls="stack-lcd"
                 onClick={() => {
                   play('key')
                   setActive((a) => (a === k.id ? null : k.id))

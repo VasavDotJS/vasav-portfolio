@@ -11,9 +11,7 @@ export function WorkSection() {
           ))}
         </div>
         <div className="section-head">
-          <span className="ghost-word" aria-hidden>
-            WORK
-          </span>
+          <span className="ghost-word" data-text="WORK" aria-hidden />
           <h2 className="h-section relative">work</h2>
         </div>
       </div>

@@ -1,6 +1,5 @@
 'use client'
 
-import { m } from 'motion/react'
 import type { ReactNode } from 'react'
 
 type Props = {
@@ -12,7 +11,7 @@ type Props = {
   cursor?: string
 }
 
-/** Pill switch with a weighted knob: spring with overshoot, squashes on press. */
+/** Pill switch with a weighted knob: spring easing with overshoot, squashes while pressed. */
 export function SoftToggle({ checked, onChange, label, knob, className = '', cursor }: Props) {
   return (
     <button
@@ -24,15 +23,7 @@ export function SoftToggle({ checked, onChange, label, knob, className = '', cur
       onClick={(e) => onChange(!checked, e.currentTarget)}
       className={`soft-toggle soft-well ${className}`}
     >
-      <m.span
-        className="soft-toggle__knob soft"
-        initial={false}
-        animate={{ x: checked ? 26 : 0 }}
-        whileTap={{ scaleX: 1.18, scaleY: 0.86 }}
-        transition={{ type: 'spring', stiffness: 520, damping: 22, mass: 1.1 }}
-      >
-        {knob}
-      </m.span>
+      <span className="soft-toggle__knob soft">{knob}</span>
     </button>
   )
 }

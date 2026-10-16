@@ -4,8 +4,14 @@
 // any component effect builds a timeline (child effects run before parent effects).
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { SplitText } from 'gsap/SplitText'
 
-if (typeof window !== 'undefined') gsap.registerPlugin(ScrollTrigger, SplitText)
+if (typeof window !== 'undefined') gsap.registerPlugin(ScrollTrigger)
 
-export { gsap, ScrollTrigger, SplitText }
+/** SplitText is only needed below the fold, so it loads on demand. */
+export async function loadSplitText() {
+  const { SplitText } = await import('gsap/SplitText')
+  gsap.registerPlugin(SplitText)
+  return SplitText
+}
+
+export { gsap, ScrollTrigger }

@@ -7,9 +7,9 @@ Read `AGENTS.md`: this is Next.js 16; check `node_modules/next/dist/docs/` befor
 ## Stack
 - Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6 (strict; typescript-eslint does not support TS 7 yet) · Tailwind v4 (layout utilities only)
 - GSAP 3.15 + ScrollTrigger + SplitText (owns scroll). Always import from `@/lib/gsap` (plugins registered at module scope; registering in an effect is too late for child effects) · Lenis (smooth scroll, synced to `gsap.ticker`)
-- Motion (`motion/react`, `LazyMotion` + `m.*`) only for component state (press, toggle, drag). Never on an element GSAP animates.
+- No Motion library: it cost ~42KB gz for one toggle. Component state animates with CSS (spring cubic-beziers, :active); GSAP owns scroll.
 - React Three Fiber 9 + drei + @react-three/postprocessing, custom GLSL in `/shaders`
-- Zod (shared client/server schema) · Resend (contact) · pnpm via `corepack pnpm`
+- Zod via `zod/mini` (shared client/server schema, small client bundle) · Resend (contact) · pnpm via `corepack pnpm`
 - No UI kits, no icon packs. Icons are hand-drawn in `components/icons.tsx`.
 
 ## Commands
@@ -46,14 +46,17 @@ Read `AGENTS.md`: this is Next.js 16; check `node_modules/next/dist/docs/` befor
 - Dark: bg `#000000` exactly (never grey panels, never full-screen blur), surfaces `#0A0A0B`/`#111113`,
   ink `#EDEBE6` (never #FFF for large text), coral `#F07A70`, yellow `#FFE14A` (sparingly).
 - Coral is never body text on paper (fails AA). Text on coral/yellow is always `#0E0E0E`.
-- Grain uses `multiply` in both themes so dark-mode black stays `#000`.
+- Grain is dark alpha specks with normal blending (no full-screen blend layer), so dark-mode black stays `#000`.
 - Radii: pills 999px, cards 28px, keycaps 14px, collage pieces 0. 8px spacing scale, 12-col grid, 24/16px gutters, max 1600px.
-- Type: system SF/Helvetica stack; fallbacks via next/font: Inter (text), Inter Tight (display only — its space is too narrow for body); mono = SF Mono → JetBrains Mono.
-  Display tracking −0.04 to −0.06em, body −0.01em, tabular nums for counters/dates.
+- Type: system SF/Helvetica stack; fallback via next/font: Inter only (Inter Tight was dropped for weight; display
+  uses Inter at −0.06 to −0.07em). A `Rupee` @font-face maps U+20B9 to local fonts so ₹ doesn't fetch Inter's latin-ext.
+  Body −0.01em, tabular nums for counters/dates.
 
 ## Neomorphism
 - One global light: `lib/light-store.ts` writes `--lx/--ly` (−1..1) on `:root`; `--sx/--sy` derive shadow direction.
   Every soft surface computes shadows/speculars from these. The 3D scene reads `getLight()`.
+  Writing `:root` restyles + repaints the page: per-frame only with a fine pointer; on touch, coarse gyro steps.
+  Collage parallax uses separate `--px/--py` scoped to `.collage`; touch without a gyro gets a CSS (compositor) drift.
 - Light theme = dual shadow. Dark theme = 1px top rim + specular gradient + glow only when pressed.
 - States: rest raised · hover higher (+magnetic ≤8px) · press inset (90ms) · focus-visible = high-contrast ring · disabled flat.
 - Primitives in `components/soft`: SoftButton, SoftToggle, SoftInput, SoftCard, Keycap, Dock. Compose from these.

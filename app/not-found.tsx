@@ -7,12 +7,8 @@ export default function NotFound() {
     <main id="main" className="paper-grid grid min-h-svh place-items-center px-[var(--gutter)] pt-[var(--bar-h)]">
       <div className="grid justify-items-start gap-8">
         <h1 className="nf-404 misreg">
-          <span className="misreg-ghost is-yellow" aria-hidden>
-            404
-          </span>
-          <span className="misreg-ghost is-coral" aria-hidden>
-            404
-          </span>
+          <span className="misreg-ghost is-yellow" data-text="404" aria-hidden />
+          <span className="misreg-ghost is-coral" data-text="404" aria-hidden />
           404
         </h1>
         <p className="text-[clamp(20px,2.4vw,32px)] font-semibold tracking-[-0.03em]">{misc.notFound}</p>

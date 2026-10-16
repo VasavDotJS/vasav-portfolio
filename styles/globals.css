@@ -101,7 +101,7 @@ button {
 .display {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.065em;
   line-height: 0.82;
 }
 
@@ -109,7 +109,7 @@ button {
   font-family: var(--font-display);
   font-weight: 750;
   font-size: clamp(44px, 9vw, 160px);
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
   line-height: 0.85;
 }
 
@@ -234,4 +234,13 @@ button {
   *::after {
     scroll-behavior: auto !important;
   }
+}
+
+/* decorative duplicates (ghost words, misregistered inks, print-through) are generated text:
+   they look the same but aren't read out or contrast-checked as content */
+.ghost-word::before,
+.misreg-ghost::before,
+.piece-ghost::before,
+.piece-back .piece-text::before {
+  content: attr(data-text);
 }

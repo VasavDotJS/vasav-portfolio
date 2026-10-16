@@ -51,12 +51,8 @@ export function XprsoPinned() {
             {x.index} · {x.language.toLowerCase()} · {x.dateLabel} · {x.repo}
           </p>
           <h3 className="xprso-name misreg">
-            <span className="misreg-ghost is-yellow" aria-hidden>
-              {x.name}
-            </span>
-            <span className="misreg-ghost is-coral" aria-hidden>
-              {x.name}
-            </span>
+            <span className="misreg-ghost is-yellow" data-text={x.name} aria-hidden />
+            <span className="misreg-ghost is-coral" data-text={x.name} aria-hidden />
             {x.name}
           </h3>
           <p className="xprso-oneliner">{x.oneLiner}</p>

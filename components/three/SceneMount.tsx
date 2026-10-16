@@ -40,23 +40,19 @@ export function SceneMount() {
   }, [])
 
   if (!home) return null
-  if (mode === '3d')
-    return (
-      <Scene
-        onFallback={() => {
-          document.documentElement.dataset.scene = 'static'
-          setMode('static')
-        }}
-      />
-    )
-  if (mode === 'static')
-    return (
-      <div className="scene-static" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/halftone-light.webp" alt="" className="scene-static__img is-light" width={900} height={900} decoding="async" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/halftone-dark.webp" alt="" className="scene-static__img is-dark" width={900} height={900} decoding="async" />
-      </div>
-    )
-  return null
+  return (
+    <>
+      {/* The static print is server-rendered so it's discovered with the CSS (it's often the LCP
+          on machines without a GPU). Once a real WebGL frame exists it fades out (styles/collage.css). */}
+      <div className="scene-print" aria-hidden />
+      {mode === '3d' && (
+        <Scene
+          onFallback={() => {
+            document.documentElement.dataset.scene = 'static'
+            setMode('static')
+          }}
+        />
+      )}
+    </>
+  )
 }

@@ -37,11 +37,25 @@
   }
 }
 
-/* rest pose + parallax from the global light (pointer, gyro or idle drift) */
+/* rest pose + parallax (--px/--py from lib/light-store, scoped to .collage) */
 .piece-par {
   transform-style: preserve-3d;
-  translate: calc(var(--ox) + var(--lx) * var(--dp) * -1px) calc(var(--oy) + var(--ly) * var(--dp) * -1px);
+  translate: calc(var(--ox) + var(--px, 0) * var(--dp) * -1px) calc(var(--oy) + var(--py, 0) * var(--dp) * -1px);
   rotate: var(--r);
+}
+
+/* touch without a gyro: slow idle drift, compositor-only (lib/light-store sets data-drift) */
+.collage[data-drift='true'] .piece-par {
+  animation: drift 11s ease-in-out infinite alternate;
+  animation-delay: calc(var(--jd) * 22);
+}
+@keyframes drift {
+  from {
+    translate: calc(var(--ox) + var(--dp) * 0.6px) calc(var(--oy) + var(--dp) * 0.35px);
+  }
+  to {
+    translate: calc(var(--ox) - var(--dp) * 0.6px) calc(var(--oy) - var(--dp) * 0.2px);
+  }
 }
 
 /* stepped stop-motion jitter, 8fps */
@@ -145,7 +159,7 @@
   font-size: var(--name-size);
   font-weight: 800;
   line-height: 0.8;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.068em;
   white-space: nowrap;
 }
 
@@ -315,34 +329,38 @@
 [data-theme='dark'] .scene-canvas {
   mix-blend-mode: screen;
 }
-.scene-static {
+.scene-print {
   /* no z-index: a stacking context here would isolate the blend from the paper */
   position: absolute;
   inset: 0 0 auto 0;
-  pointer-events: none;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
   height: 100svh;
+  min-height: 620px;
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 600ms var(--ease-out);
 }
-.scene-static__img {
+.scene-print::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: min(70vh, 90vw);
-  height: auto;
+  aspect-ratio: 1;
+  translate: calc(-50% + 14vw) calc(-50% + 6vh);
+  background: url('/halftone-light.webp') center / contain no-repeat;
   mix-blend-mode: multiply;
-  translate: 14vw 6vh;
+}
+[data-theme='dark'] .scene-print::before {
+  background-image: url('/halftone-dark.webp');
+  mix-blend-mode: screen;
 }
 @media (max-width: 767px) {
-  .scene-static__img {
-    translate: 0 22vh;
+  .scene-print::before {
+    translate: -50% calc(-50% + 22vh);
   }
 }
-.scene-static__img.is-dark,
-[data-theme='dark'] .scene-static__img.is-light {
-  display: none;
-}
-[data-theme='dark'] .scene-static__img.is-dark {
-  display: block;
-  mix-blend-mode: screen;
+html[data-scene='3d'][data-scene-ready='true'] .scene-print {
+  opacity: 0;
 }
 
 @media (max-width: 767px) {

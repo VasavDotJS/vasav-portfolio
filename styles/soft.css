@@ -140,7 +140,13 @@
 }
 .soft-toggle__knob {
   --d: 3px;
+  --x: 0px;
   position: absolute;
+  translate: var(--x) 0;
+  transition:
+    translate 520ms cubic-bezier(0.34, 1.7, 0.5, 1),
+    scale 140ms var(--ease-out),
+    background-color 200ms;
   top: var(--pad);
   left: var(--pad);
   width: calc(var(--h) - var(--pad) * 2);
@@ -167,6 +173,13 @@
 .soft-toggle[aria-checked='true'] .soft-toggle__knob {
   background-color: var(--ink);
   color: var(--ink-inverse);
+}
+
+.soft-toggle[aria-checked='true'] .soft-toggle__knob {
+  --x: 26px;
+}
+.soft-toggle:active .soft-toggle__knob {
+  scale: 1.18 0.86;
 }
 
 /* ---------- input ---------- */

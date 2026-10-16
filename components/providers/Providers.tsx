@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
-import { LazyMotion, domAnimation, MotionConfig } from 'motion/react'
 import { initLight } from '@/lib/light-store'
 import { initSectionObserver } from '@/lib/section-store'
 import { initThemeSync } from '@/lib/theme-store'
@@ -62,11 +61,5 @@ export function Providers({ children }: { children: ReactNode }) {
     return () => cleanups.forEach((c) => c())
   }, [])
 
-  return (
-    <MotionConfig reducedMotion="user">
-      <LazyMotion features={domAnimation} strict>
-        {children}
-      </LazyMotion>
-    </MotionConfig>
-  )
+  return children
 }

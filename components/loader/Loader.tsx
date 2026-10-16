@@ -156,22 +156,45 @@ export function Loader() {
     skipEvents.forEach((e) => window.addEventListener(e, skip, { passive: true }))
 
     // ---------- draw ----------
+    // Cheap by construction: ink layers are rendered once and wiped in with drawImage; dots that
+    // have landed are baked into a plate; only dots in flight are drawn per frame (dots that haven't
+    // launched sit off-canvas). The canvas repaints at ~30fps, which suits the stepped print feel.
     const ease = (k: number) => 1 - Math.pow(1 - k, 3)
-    const drawLayer = (color: string, r: number, dx: number, dy: number, wipe: number, alpha = 1) => {
-      ctx.globalAlpha = alpha
-      ctx.fillStyle = color
-      ctx.beginPath()
-      const limit = wipe * (H + cell)
+    const r = cell * 0.36
+    const mis = cell * 0.42
+    const layer = (color: string, rad: number, dx: number, dy: number) => {
+      const c = document.createElement('canvas')
+      c.width = canvas.width
+      c.height = canvas.height
+      const g = c.getContext('2d')!
+      g.scale(dpr, dpr)
+      g.fillStyle = color
+      g.beginPath()
       for (const d of dots) {
-        if (d.ty > limit) continue
-        ctx.moveTo(d.tx + dx + r, d.ty + dy)
-        ctx.arc(d.tx + dx, d.ty + dy, r, 0, Math.PI * 2)
+        g.moveTo(d.tx + dx + rad, d.ty + dy)
+        g.arc(d.tx + dx, d.ty + dy, rad, 0, Math.PI * 2)
       }
-      ctx.fill()
+      g.fill()
+      return c
+    }
+    let inks: { plate: HTMLCanvasElement; y: HTMLCanvasElement; c: HTMLCanvasElement; k: HTMLCanvasElement } | null = null
+    const baked = document.createElement('canvas')
+    baked.width = canvas.width
+    baked.height = canvas.height
+    const bake = baked.getContext('2d')!
+    bake.scale(dpr, dpr)
+    bake.fillStyle = ink.plate
+    // draw `src` (device-pixel canvas) revealed from the top down to `wipe` (0..1)
+    const wipeIn = (src: HTMLCanvasElement, wipe: number, alpha = 1) => {
+      const h = Math.min(src.height, Math.ceil(wipe * (H + cell) * dpr))
+      if (h <= 0 || alpha <= 0) return
+      ctx.globalAlpha = alpha
+      ctx.drawImage(src, 0, 0, src.width, h, 0, 0, W, h / dpr)
       ctx.globalAlpha = 1
     }
 
     let last = start
+    let lastDraw = 0
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame)
       // rAF timestamps can precede `start`; never let dt go negative
@@ -188,25 +211,36 @@ export function Loader() {
       shown = Math.max(prevShown, Math.min(shown, ceiling, 1))
       prevShown = shown
       if (real >= 1 && timeCap >= 1 && 1 - shown < 0.004) shown = 1
-      counter.textContent = String(Math.floor(shown * 100)).padStart(3, '0')
+      const label = String(Math.floor(shown * 100)).padStart(3, '0')
+      if (counter.textContent !== label) counter.textContent = label
 
-      ctx.clearRect(0, 0, W, H)
-      if (!dots.length) return
-      // paper: inks multiply like real riso. OLED: inks stack in order so each pass stays readable
-      ctx.globalCompositeOperation = dark ? 'source-over' : 'multiply'
+      if (!dots.length || now - lastDraw < 30) return
+      lastDraw = now
 
       if (shown >= 1 && printStart.t < 0) {
         printStart.t = now
         play('hum')
       }
-      const r = cell * 0.36
+      ctx.clearRect(0, 0, W, H)
       if (printStart.t < 0) {
-        // assembling plate
+        // assembling plate: baked arrivals + dots in flight
+        ctx.drawImage(baked, 0, 0, W, H)
         ctx.fillStyle = ink.plate
         ctx.beginPath()
         for (const d of dots) {
-          if (d.arrive < 0 && shown >= d.th) d.arrive = now
-          const k = d.arrive < 0 ? 0 : ease(Math.min(1, (now - d.arrive) / 520))
+          if (d.arrive === -2) continue // baked
+          if (d.arrive < 0) {
+            if (shown < d.th) continue // not launched, off-canvas
+            d.arrive = now
+          }
+          const k = ease(Math.min(1, (now - d.arrive) / 520))
+          if (k >= 1) {
+            bake.beginPath()
+            bake.arc(d.tx, d.ty, r, 0, Math.PI * 2)
+            bake.fill()
+            d.arrive = -2
+            continue
+          }
           const x = d.sx + (d.tx - d.sx) * k
           const y = d.sy + (d.ty - d.sy) * k
           const rr = r * (0.35 + 0.65 * k)
@@ -216,16 +250,23 @@ export function Loader() {
         ctx.fill()
       } else {
         // three ink passes, each wiping down, offset like a misregistered riso drum
+        inks ??= {
+          plate: layer(ink.plate, r, 0, 0),
+          y: layer(ink.y, cell * 0.5, mis, -mis * 0.6),
+          c: layer(ink.c, cell * 0.38, -mis * 0.8, mis * 0.4),
+          k: layer(ink.k, cell * (dark ? 0.22 : 0.3), 0, 0),
+        }
         const t = (now - printStart.t) / (mode === 'short' ? 160 : 620)
         const wipe = (i: number) => Math.max(0, Math.min(1, (t - i * 0.28) / 0.6))
-        const mis = cell * 0.42
-        drawLayer(ink.plate, r, 0, 0, 1, 1 - wipe(2))
-        drawLayer(ink.y, cell * 0.5, mis, -mis * 0.6, wipe(0))
-        drawLayer(ink.c, cell * 0.38, -mis * 0.8, mis * 0.4, wipe(1))
-        drawLayer(ink.k, cell * (dark ? 0.22 : 0.3), 0, 0, wipe(2))
+        // paper: inks multiply like real riso. OLED: inks stack in order so each pass stays readable
+        ctx.globalCompositeOperation = dark ? 'source-over' : 'multiply'
+        wipeIn(inks.plate, 1, 1 - wipe(2))
+        wipeIn(inks.y, wipe(0))
+        wipeIn(inks.c, wipe(1))
+        wipeIn(inks.k, wipe(2))
+        ctx.globalCompositeOperation = 'source-over'
         if (wipe(2) >= 1) exit(false)
       }
-      ctx.globalCompositeOperation = 'source-over'
     }
     raf = requestAnimationFrame(frame)
     // hard failsafe: whatever happens, the overlay never outlives MAX_WAIT by much

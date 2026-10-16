@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import 'lenis/dist/lenis.css'
 import '@/styles/globals.css'
 import { Cursor } from '@/components/chrome/Cursor'
@@ -16,11 +16,6 @@ import { headScript } from '@/lib/head-script'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap',
-})
-const interTight = Inter_Tight({
-  subsets: ['latin'],
-  variable: '--font-inter-tight',
   display: 'swap',
 })
 const jetbrains = JetBrains_Mono({
@@ -61,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-theme="light"
       suppressHydrationWarning
-      className={`${inter.variable} ${interTight.variable} ${jetbrains.variable}`}
+      className={`${inter.variable} ${jetbrains.variable}`}
     >
       <head>
         <meta name="theme-color" content="#E8E5DF" />

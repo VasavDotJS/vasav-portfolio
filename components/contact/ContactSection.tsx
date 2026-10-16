@@ -17,7 +17,7 @@ export function ContactSection() {
           <span className="sr-only">{contact.heading.join(' ')}</span>
           {contact.heading.map((w, i) => (
             <span key={w} className={`scrap ${i ? 'tone-paper is-b' : 'tone-yellow is-a'}`} aria-hidden>
-              <span className="piece-ghost is-coral">{w}</span>
+              <span className="piece-ghost is-coral" data-text={w} />
               <span className="piece-text">{w}</span>
             </span>
           ))}

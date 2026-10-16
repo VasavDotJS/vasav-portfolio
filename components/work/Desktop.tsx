@@ -280,7 +280,6 @@ function DesktopIcon({ pos, label, small, selected, onSelect, onOpen, children }
       data-selected={selected ? 'true' : 'false'}
       style={{ left: `${pos[0]}%`, top: `${pos[1]}%` }}
       data-cursor="open"
-      aria-label={`open ${label}`}
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
@@ -293,7 +292,10 @@ function DesktopIcon({ pos, label, small, selected, onSelect, onOpen, children }
       }}
     >
       {children}
-      <span className="dicon-label meta">{label}</span>
+      <span className="dicon-label meta">
+        <span className="sr-only">open </span>
+        {label}
+      </span>
     </button>
   )
 }

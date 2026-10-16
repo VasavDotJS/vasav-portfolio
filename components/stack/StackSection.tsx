@@ -11,9 +11,7 @@ export function StackSection() {
           ))}
         </div>
         <div className="section-head">
-          <span className="ghost-word" aria-hidden>
-            STACK
-          </span>
+          <span className="ghost-word" data-text="STACK" aria-hidden />
           <h2 className="h-section relative">stack</h2>
         </div>
         <Keyboard />

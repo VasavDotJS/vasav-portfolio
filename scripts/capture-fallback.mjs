@@ -20,7 +20,7 @@ for (const theme of ['light', 'dark']) {
   })
   await page.waitForTimeout(3500)
   const png = await page.screenshot()
-  await sharp(png).webp({ quality: 82, effort: 6 }).toFile(`public/halftone-${theme}.webp`)
+  await sharp(png).resize(820).webp({ quality: 74, effort: 6 }).toFile(`public/halftone-${theme}.webp`)
   console.log(`public/halftone-${theme}.webp`)
   await ctx.close()
 }

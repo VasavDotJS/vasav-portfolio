@@ -1,5 +1,13 @@
 /* Design tokens. Light = "paper", dark = "OLED". Swapped by [data-theme] on <html>. */
 
+@font-face {
+  font-family: Rupee;
+  src:
+    local('Segoe UI'), local('SegoeUI'), local('Roboto'), local('Noto Sans'), local('NotoSans-Regular'),
+    local('Arial'), local('ArialMT'), local('DejaVu Sans'), local('Helvetica Neue');
+  unicode-range: U+20B9;
+}
+
 @property --lx {
   syntax: '<number>';
   inherits: true;
@@ -60,14 +68,15 @@
   --sy: clamp(-1, calc(0.3 - var(--ly) * 0.9), 1);
 
   /* type */
-  /* SF / Helvetica where licensed locally; Inter (text) and Inter Tight (display) elsewhere */
+  /* SF / Helvetica where available locally; Inter (next/font) elsewhere. 'Rupee' maps only
+     U+20B9 to local fonts so one ₹ doesn't pull Inter's 85KB latin-ext file. */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, var(--font-inter),
-    Arial, sans-serif;
+    Rupee, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica,
+    var(--font-inter), Arial, sans-serif;
   --font-display:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica,
-    var(--font-inter-tight), var(--font-inter), Arial, sans-serif;
-  --font-mono: 'SF Mono', ui-monospace, var(--font-jetbrains), Menlo, monospace;
+    Rupee, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica,
+    var(--font-inter), Arial, sans-serif;
+  --font-mono: Rupee, 'SF Mono', ui-monospace, var(--font-jetbrains), Menlo, monospace;
 
   /* motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

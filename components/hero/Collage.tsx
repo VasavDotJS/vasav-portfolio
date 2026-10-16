@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties } from 'react'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { collageLayout, type PieceDef } from '@/lib/collage-layout'
 import { getSeed, onSeed } from '@/lib/collage-store'
+import { registerParallax } from '@/lib/light-store'
 import { hashString, mulberry32, range } from '@/lib/seeded-random'
 import { play } from '@/lib/sound'
 
@@ -52,6 +53,9 @@ const SSR_SEED = hashString('vasav p ramesh')
 
 export function Collage() {
   const root = useRef<HTMLDivElement>(null)
+
+  // parallax vars are written straight onto this element, not :root (see lib/light-store)
+  useEffect(() => (root.current ? registerParallax(root.current) : undefined), [])
 
   // apply the daily seed (and later reseeds) straight to the DOM; SSR keeps a fixed pose
   useEffect(() => {
@@ -167,15 +171,15 @@ function Piece({ p }: { p: PieceDef }) {
           <div className={`piece-body tone-${p.tone}`} style={clip ? { clipPath: clip } : undefined}>
             {p.ghost && (
               <>
-                <span className="piece-ghost is-yellow">{p.text}</span>
-                <span className="piece-ghost is-coral">{p.text}</span>
+                <span className="piece-ghost is-yellow" data-text={p.text} />
+                <span className="piece-ghost is-coral" data-text={p.text} />
               </>
             )}
             <span className="piece-text">{p.text}</span>
           </div>
           {p.flip && (
             <div className={`piece-back tone-${p.tone}`}>
-              <span className="piece-text">{p.text}</span>
+              <span className="piece-text" data-text={p.text} />
             </div>
           )}
           {p.tape?.map((t, i) => (
