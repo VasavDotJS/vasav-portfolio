@@ -2,6 +2,7 @@
 @import './tokens.css';
 @import './soft.css';
 @import './chrome.css';
+@import './collage.css';
 
 @theme inline {
   --color-bg: var(--bg);
@@ -40,6 +41,12 @@ body {
   letter-spacing: -0.01em;
   font-feature-settings: 'ss01', 'cv11';
   min-height: 100svh;
+  overflow-x: clip;
+}
+
+main {
+  position: relative;
+  z-index: 1;
   overflow-x: clip;
 }
 
@@ -156,7 +163,9 @@ button {
 
 /* ---------- texture ---------- */
 
-/* film/paper grain, stepped at ~12fps so it reads as print */
+/* film/paper grain, stepped at ~12fps so it reads as print.
+   Dark specks with alpha and normal blending: darkens paper and ink, never lifts #000,
+   and avoids a full-screen blend layer. */
 .grain {
   position: fixed;
   inset: 0;
@@ -164,24 +173,23 @@ button {
   pointer-events: none;
   overflow: hidden;
   opacity: var(--grain-opacity);
-  mix-blend-mode: var(--grain-blend);
 }
 .grain::before {
   content: '';
   position: absolute;
-  inset: -50%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  inset: -64px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.6 0 0 0 -1.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
   animation: grain 0.5s steps(1) infinite;
   will-change: transform;
 }
 @keyframes grain {
   0% { transform: translate(0, 0); }
-  17% { transform: translate(-7%, 4%); }
-  33% { transform: translate(5%, -6%); }
-  50% { transform: translate(-3%, -9%); }
-  67% { transform: translate(8%, 3%); }
-  83% { transform: translate(-6%, 7%); }
+  17% { transform: translate(-37px, 21px); }
+  33% { transform: translate(29px, -43px); }
+  50% { transform: translate(-13px, -51px); }
+  67% { transform: translate(47px, 17px); }
+  83% { transform: translate(-31px, 39px); }
 }
 
 /* CSS halftone for static elements */

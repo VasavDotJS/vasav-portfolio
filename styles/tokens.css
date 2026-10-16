@@ -46,8 +46,7 @@
   --focus-offset: #e8e5df;
 
   /* texture */
-  --grain-opacity: 0.11;
-  --grain-blend: multiply;
+  --grain-opacity: 0.13;
   --halftone-ink: rgb(14 14 14 / 0.9);
 
   /* misregistration (px), nudged by scroll velocity */
@@ -113,7 +112,7 @@
   --press-glow: transparent;
   --focus: #0e0e0e;
   --focus-offset: #e8e5df;
-  --grain-opacity: 0.11;
+  --grain-opacity: 0.13;
   --halftone-ink: rgb(14 14 14 / 0.9);
 }
 
@@ -153,8 +152,7 @@
   --focus: #ffe14a;
   --focus-offset: #000000;
 
-  /* multiply keeps #000 at #000: grain only textures the ink */
+  /* dark specks only: they texture the ink and leave #000 alone */
   --grain-opacity: 0.22;
-  --grain-blend: multiply;
   --halftone-ink: rgb(240 122 112 / 0.9);
 }

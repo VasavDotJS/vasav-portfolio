@@ -6,6 +6,7 @@ import { Dock } from '@/components/chrome/Dock'
 import { MetaBar } from '@/components/chrome/MetaBar'
 import { Grain } from '@/components/fx/Grain'
 import { Providers } from '@/components/providers/Providers'
+import { SceneMount } from '@/components/three/SceneMount'
 import { headScript } from '@/lib/head-script'
 
 const inter = Inter({
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <Providers>
           <MetaBar />
+          <SceneMount />
           {children}
           <Dock />
         </Providers>
