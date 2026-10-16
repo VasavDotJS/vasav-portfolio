@@ -13,7 +13,7 @@ for (const theme of ['light', 'dark']) {
     sessionStorage.setItem('vpr-loaded', '1')
   }, theme)
   const page = await ctx.newPage()
-  await page.goto(`${base}/?capture`, { waitUntil: 'networkidle' })
+  await page.goto(`${base}/?capture&force3d`, { waitUntil: 'networkidle' })
   await page.addStyleTag({
     content: `main, header, nav, .grain, .loader { display: none !important }
       html, body { background: ${theme === 'dark' ? '#000' : '#fff'} !important }`,

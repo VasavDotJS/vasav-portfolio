@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import { Dock } from '@/components/chrome/Dock'
 import { MetaBar } from '@/components/chrome/MetaBar'
 import { Grain } from '@/components/fx/Grain'
+import { Loader } from '@/components/loader/Loader'
 import { Providers } from '@/components/providers/Providers'
 import { SceneMount } from '@/components/three/SceneMount'
 import { headScript } from '@/lib/head-script'
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip-link meta" href="#main">
           skip to content
         </a>
+        <Loader />
         <Providers>
           <MetaBar />
           <SceneMount />

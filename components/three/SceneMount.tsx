@@ -2,16 +2,22 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { markSceneReady } from '@/lib/scene-state'
+import { markSceneReady, markSceneRequested } from '@/lib/scene-state'
 
 // three.js + R3F live in their own chunk, requested as soon as the page hydrates
 // (i.e. while the loader is running). The loader listens for 'vpr:scene-ready'.
 const Scene = dynamic(() => import('./Scene'), { ssr: false })
 
+/** WebGL with a real GPU. Software rasterizers (SwiftShader, llvmpipe) get the static print. */
 function canWebGL() {
   try {
     const c = document.createElement('canvas')
-    return Boolean(c.getContext('webgl2') ?? c.getContext('webgl'))
+    const gl = (c.getContext('webgl2') ?? c.getContext('webgl')) as WebGLRenderingContext | null
+    if (!gl) return false
+    const info = gl.getExtension('WEBGL_debug_renderer_info')
+    const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : ''
+    gl.getExtension('WEBGL_lose_context')?.loseContext()
+    return !/swiftshader|llvmpipe|software|softpipe/i.test(renderer)
   } catch {
     return false
   }
@@ -22,14 +28,15 @@ export function SceneMount() {
 
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const forced = new URLSearchParams(location.search).has('no3d')
-    const next = !reduced && !forced && canWebGL() ? '3d' : 'static'
+    const q = new URLSearchParams(location.search)
+    const next = q.has('force3d') || (!reduced && !q.has('no3d') && canWebGL()) ? '3d' : 'static'
     // decided after mount so SSR markup never depends on the device
     queueMicrotask(() => setMode(next))
     if (next === 'static') markSceneReady()
+    else markSceneRequested()
   }, [])
 
-  if (mode === '3d') return <Scene />
+  if (mode === '3d') return <Scene onFallback={() => setMode('static')} />
   if (mode === 'static')
     return (
       <div className="scene-static" aria-hidden>

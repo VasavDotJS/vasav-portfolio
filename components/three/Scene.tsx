@@ -4,15 +4,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PerformanceMonitor } from '@react-three/drei'
 import { EffectComposer } from '@react-three/postprocessing'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { Color, DirectionalLight, Group, UnsignedByteType, Vector2 } from 'three'
 import { getLight, subscribeLight } from '@/lib/light-store'
-import { markSceneReady, scenePose, setSceneInvalidate, type ScenePose } from '@/lib/scene-state'
+import { markSceneChunk, markSceneReady, scenePose, setSceneInvalidate, type ScenePose } from '@/lib/scene-state'
 import { getLenis } from '@/lib/scroll'
 import { getTheme, subscribeTheme } from '@/lib/theme-store'
 import { Centerpiece } from './Centerpiece'
 import { HalftoneEffect } from './HalftoneEffect'
+
+// this module is the lazily loaded 3D chunk; evaluating it means the download finished
+if (typeof window !== 'undefined') markSceneChunk()
 
 const INKS = {
   light: { k: '#0e0e0e', c: '#eb6461', y: '#fce244' },
@@ -66,7 +68,10 @@ function Rig({ effect, cellBase }: { effect: HalftoneEffect; cellBase: number })
   // render drivers: idle 30fps while visible, scroll, light
   useEffect(() => {
     setSceneInvalidate(invalidate)
+    const html = document.documentElement
     const id = window.setInterval(() => {
+      // under the loader only the first frame matters (it's a loading milestone)
+      if (html.classList.contains('is-loading') && frames.current > 2) return
       if (!document.hidden && scenePose.fade > 0.01) invalidate()
     }, 1000 / 30)
     const offLight = subscribeLight(invalidate)
@@ -152,7 +157,7 @@ function Rig({ effect, cellBase }: { effect: HalftoneEffect; cellBase: number })
   )
 }
 
-export default function Scene() {
+export default function Scene({ onFallback }: { onFallback?: () => void }) {
   const effect = useMemo(() => new HalftoneEffect(), [])
   const [dpr, setDpr] = useState(() => Math.min(typeof window === 'undefined' ? 1 : window.devicePixelRatio, 1.75))
   const [cellBase, setCellBase] = useState(7)
@@ -171,9 +176,14 @@ export default function Scene() {
     >
       <PerformanceMonitor
         bounds={() => [18, 26]}
+        flipflops={3}
         onDecline={() => {
           setDpr(1)
           setCellBase(9)
+        }}
+        onFallback={() => {
+          // still too slow at DPR 1: hand over to the static print
+          if (!new URLSearchParams(location.search).has('force3d')) onFallback?.()
         }}
       />
       <Rig effect={effect} cellBase={cellBase} />

@@ -9,5 +9,6 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('co
 var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var seen=null;try{seen=sessionStorage.getItem('vpr-loaded')}catch(e){}
 d.dataset.loader=rm?'calm':(seen?'short':'full');
-d.classList.add('js');
+d.classList.add('js','is-loading');
+setTimeout(function(){d.classList.remove('is-loading')},10000);
 }catch(e){}})();`

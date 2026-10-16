@@ -1,0 +1,96 @@
+/* ---------- loader: the print run ---------- */
+
+html.is-loading {
+  overflow: hidden;
+}
+
+.loader {
+  --sink: 0;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  color: var(--ink);
+}
+html.js .loader {
+  display: block;
+}
+
+.loader-panel {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+/* the tear only casts a shadow once it starts to open */
+.loader[data-split='true'] .loader-panel.is-top {
+  filter: drop-shadow(0 8px 12px rgb(0 0 0 / 0.22));
+}
+.loader[data-split='true'] .loader-panel.is-bottom {
+  filter: drop-shadow(0 -6px 10px rgb(0 0 0 / 0.12));
+}
+[data-theme='dark'] .loader[data-split='true'] .loader-panel {
+  filter: drop-shadow(0 0 1px rgb(237 235 230 / 0.55));
+}
+.loader-sheet {
+  position: absolute;
+  inset: 0;
+  background-color: var(--bg);
+  box-shadow: inset 0 0 calc(var(--sink) * 160px) calc(var(--sink) * 12px) var(--shadow-dark);
+}
+
+.loader-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.loader-meta {
+  position: absolute;
+  top: 18px;
+  left: var(--gutter);
+}
+.loader-count {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 10px;
+  font-size: clamp(56px, 9vw, 136px);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+}
+.loader-skip {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 18px;
+  opacity: 0;
+  animation: skip-in 0.2s 0.6s forwards;
+}
+@keyframes skip-in {
+  to {
+    opacity: 0.6;
+  }
+}
+.loader-mark {
+  position: relative;
+  width: min(80vw, 700px);
+  aspect-ratio: 7 / 3;
+}
+.loader-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.loader-btn {
+  --d: 10px;
+  position: absolute;
+  inset: -9% -5%;
+  border-radius: 48px;
+  opacity: 0;
+  scale: 0.92;
+}
+
+html[data-loader='calm'] .loader-mark,
+html[data-loader='calm'] .loader-skip {
+  display: none;
+}

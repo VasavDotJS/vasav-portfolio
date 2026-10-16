@@ -153,6 +153,6 @@
   --focus-offset: #000000;
 
   /* dark specks only: they texture the ink and leave #000 alone */
-  --grain-opacity: 0.22;
+  --grain-opacity: 0.16;
   --halftone-ink: rgb(240 122 112 / 0.9);
 }

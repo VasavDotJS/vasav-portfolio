@@ -338,3 +338,9 @@
   display: block;
   mix-blend-mode: screen;
 }
+
+@media (max-width: 767px) {
+  .scroll-cue {
+    display: none;
+  }
+}

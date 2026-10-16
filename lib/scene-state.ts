@@ -9,10 +9,18 @@ export const setSceneInvalidate = (fn: (() => void) | null) => {
 }
 export const requestSceneFrame = () => invalidate?.()
 
-let ready = false
-export const isSceneReady = () => ready
+// Loading milestones the loader reads (polled, so event ordering never matters).
+export const sceneMilestones = { requested: false, chunk: false, ready: false }
+
+export const isSceneReady = () => sceneMilestones.ready
+export function markSceneRequested() {
+  sceneMilestones.requested = true
+}
+export function markSceneChunk() {
+  sceneMilestones.chunk = true
+}
 export function markSceneReady() {
-  if (ready) return
-  ready = true
+  if (sceneMilestones.ready) return
+  sceneMilestones.requested = sceneMilestones.chunk = sceneMilestones.ready = true
   window.dispatchEvent(new Event('vpr:scene-ready'))
 }

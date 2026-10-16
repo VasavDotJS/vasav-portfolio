@@ -6,7 +6,7 @@ Read `AGENTS.md`: this is Next.js 16; check `node_modules/next/dist/docs/` befor
 
 ## Stack
 - Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6 (strict; typescript-eslint does not support TS 7 yet) · Tailwind v4 (layout utilities only)
-- GSAP 3.15 + ScrollTrigger + SplitText (owns scroll) · Lenis (smooth scroll, synced to `gsap.ticker`)
+- GSAP 3.15 + ScrollTrigger + SplitText (owns scroll). Always import from `@/lib/gsap` (plugins registered at module scope; registering in an effect is too late for child effects) · Lenis (smooth scroll, synced to `gsap.ticker`)
 - Motion (`motion/react`, `LazyMotion` + `m.*`) only for component state (press, toggle, drag). Never on an element GSAP animates.
 - React Three Fiber 9 + drei + @react-three/postprocessing, custom GLSL in `/shaders`
 - Zod (shared client/server schema) · Resend (contact) · pnpm via `corepack pnpm`

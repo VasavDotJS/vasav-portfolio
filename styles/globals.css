@@ -3,6 +3,7 @@
 @import './soft.css';
 @import './chrome.css';
 @import './collage.css';
+@import './loader.css';
 
 @theme inline {
   --color-bg: var(--bg);

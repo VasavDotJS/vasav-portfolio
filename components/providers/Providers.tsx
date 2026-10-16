@@ -2,8 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react'
 import Lenis from 'lenis'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { LazyMotion, domAnimation, MotionConfig } from 'motion/react'
 import { initLight } from '@/lib/light-store'
 import { initSectionObserver } from '@/lib/section-store'
@@ -12,7 +11,7 @@ import { scrollToHash, setLenis } from '@/lib/scroll'
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
+    if (process.env.NODE_ENV !== 'production') Object.assign(window, { __ST: ScrollTrigger })
     const cleanups: (() => void)[] = [initLight(), initThemeSync(), initSectionObserver()]
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const root = document.documentElement
@@ -26,6 +25,7 @@ export function Providers({ children }: { children: ReactNode }) {
     if (!reduced) {
       const lenis = new Lenis({ autoRaf: false, lerp: 0.1, anchors: false })
       setLenis(lenis)
+      if (root.classList.contains('is-loading')) lenis.stop()
       lenis.on('scroll', (l: Lenis) => {
         ScrollTrigger.update()
         toMis(3 + Math.min(Math.abs(l.velocity) * 0.35, 6))
