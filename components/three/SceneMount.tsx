@@ -32,11 +32,20 @@ export function SceneMount() {
     const next = q.has('force3d') || (!reduced && !q.has('no3d') && canWebGL()) ? '3d' : 'static'
     // decided after mount so SSR markup never depends on the device
     queueMicrotask(() => setMode(next))
+    document.documentElement.dataset.scene = next
     if (next === 'static') markSceneReady()
     else markSceneRequested()
   }, [])
 
-  if (mode === '3d') return <Scene onFallback={() => setMode('static')} />
+  if (mode === '3d')
+    return (
+      <Scene
+        onFallback={() => {
+          document.documentElement.dataset.scene = 'static'
+          setMode('static')
+        }}
+      />
+    )
   if (mode === 'static')
     return (
       <div className="scene-static" aria-hidden>

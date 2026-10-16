@@ -63,7 +63,14 @@ export const work = {
       title: 'settled means settled',
       text: 'settling takes the next invoice number for the financial year, under a row lock. after that a trigger rejects every UPDATE and DELETE on the bill.',
       caption: 'try dragging the receipt.',
-      refusal: 'Cannot modify a settled order.',
+      // verbatim from XPRSO's immutability trigger (src/server/db/migrate.ts)
+      refusal: 'Cannot modify a settled order. Settled orders are immutable.',
+      demoLabel: 'illustration. sample items, real invoice-number format.',
+      items: [
+        { name: 'cortado', qty: 2, paise: 18000 },
+        { name: 'banana bread', qty: 1, paise: 15000 },
+      ],
+      stamp: 'SETTLED',
     },
     passkeys: {
       title: 'passkeys, not PINs',
@@ -72,6 +79,8 @@ export const work = {
       done: 'signed in. (not really.)',
     },
     outro: 'view repo',
+    keypad: { stored: 'stored', paise: 'paise', cgst: 'cgst 2.5%', sgst: 'sgst 2.5%', total: 'total', clear: 'clear', del: 'delete' },
+    hold: 'hold',
   },
   desktop: {
     meta: ['DESKTOP', 'DOUBLE-CLICK TO OPEN', 'DRAG IS FINE'],
