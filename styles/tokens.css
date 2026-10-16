@@ -61,9 +61,13 @@
   --sy: clamp(-1, calc(0.3 - var(--ly) * 0.9), 1);
 
   /* type */
+  /* SF / Helvetica where licensed locally; Inter (text) and Inter Tight (display) elsewhere */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica,
-    var(--font-inter-tight), 'Inter', Arial, sans-serif;
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, var(--font-inter),
+    Arial, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica,
+    var(--font-inter-tight), var(--font-inter), Arial, sans-serif;
   --font-mono: 'SF Mono', ui-monospace, var(--font-jetbrains), Menlo, monospace;
 
   /* motion */
@@ -86,13 +90,40 @@
   --bar-h: 44px;
 }
 
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #e8e5df;
+  --surface: #e8e5df;
+  --surface-raised: #eeebe5;
+  --surface-sunk: #e2dfd8;
+  --paper-2: #f1eee8;
+  --paper-3: #dedad2;
+  --ink: #0e0e0e;
+  --ink-muted: #5b5852;
+  --ink-inverse: #e8e5df;
+  --hairline: rgb(14 14 14 / 0.14);
+  --grid-line: rgb(14 14 14 / 0.05);
+  --riso-coral: #eb6461;
+  --riso-yellow: #fce244;
+  --riso-black: #0e0e0e;
+  --shadow-dark: rgb(150 143 132 / 0.55);
+  --shadow-light: rgb(255 255 255 / 0.85);
+  --rim: rgb(255 255 255 / 0.6);
+  --specular: rgb(255 255 255 / 0.35);
+  --press-glow: transparent;
+  --focus: #0e0e0e;
+  --focus-offset: #e8e5df;
+  --grain-opacity: 0.11;
+  --halftone-ink: rgb(14 14 14 / 0.9);
+}
+
 @media (min-width: 768px) {
   :root {
     --gutter: 24px;
   }
 }
 
-:root[data-theme='dark'] {
+[data-theme='dark'] {
   color-scheme: dark;
 
   --bg: #000000; /* true black, pixels off. never change. */
@@ -115,7 +146,7 @@
 
   --shadow-dark: rgb(0 0 0 / 0);
   --shadow-light: rgb(0 0 0 / 0);
-  --rim: rgb(255 255 255 / 0.07);
+  --rim: rgb(255 255 255 / 0.1);
   --specular: rgb(255 255 255 / 0.07);
   --press-glow: rgb(240 122 112 / 0.22);
 

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter_Tight, JetBrains_Mono } from 'next/font/google'
+import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import 'lenis/dist/lenis.css'
 import '@/styles/globals.css'
 import { Dock } from '@/components/chrome/Dock'
@@ -8,6 +8,11 @@ import { Grain } from '@/components/fx/Grain'
 import { Providers } from '@/components/providers/Providers'
 import { headScript } from '@/lib/head-script'
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 const interTight = Inter_Tight({
   subsets: ['latin'],
   variable: '--font-inter-tight',
@@ -51,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-theme="light"
       suppressHydrationWarning
-      className={`${interTight.variable} ${jetbrains.variable}`}
+      className={`${inter.variable} ${interTight.variable} ${jetbrains.variable}`}
     >
       <head>
         <meta name="theme-color" content="#E8E5DF" />

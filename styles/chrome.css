@@ -100,7 +100,7 @@
 .dock-dot[data-on='true'] {
   background: var(--ink);
 }
-:root[data-theme='dark'] .dock-dot[data-on='true'] {
+[data-theme='dark'] .dock-dot[data-on='true'] {
   background: var(--riso-yellow);
 }
 .dock-sep {

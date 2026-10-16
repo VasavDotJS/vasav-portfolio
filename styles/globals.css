@@ -14,6 +14,7 @@
   --color-yellow: var(--riso-yellow);
   --color-hairline: var(--hairline);
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: var(--font-mono);
   --ease-out: var(--ease-out);
   --ease-in-out: var(--ease-in-out);
@@ -88,12 +89,14 @@ button {
 }
 
 .display {
+  font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 0.82;
 }
 
 .h-section {
+  font-family: var(--font-display);
   font-weight: 750;
   font-size: clamp(44px, 9vw, 160px);
   letter-spacing: -0.05em;
@@ -199,7 +202,7 @@ button {
   pointer-events: none;
   mix-blend-mode: multiply;
 }
-:root[data-theme='dark'] .misreg > .misreg-ghost {
+[data-theme='dark'] .misreg > .misreg-ghost {
   mix-blend-mode: screen;
 }
 .misreg-ghost.is-coral {

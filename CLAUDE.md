@@ -48,7 +48,7 @@ Read `AGENTS.md`: this is Next.js 16; check `node_modules/next/dist/docs/` befor
 - Coral is never body text on paper (fails AA). Text on coral/yellow is always `#0E0E0E`.
 - Grain uses `multiply` in both themes so dark-mode black stays `#000`.
 - Radii: pills 999px, cards 28px, keycaps 14px, collage pieces 0. 8px spacing scale, 12-col grid, 24/16px gutters, max 1600px.
-- Type: system SF/Helvetica stack with Inter Tight (next/font) fallback; mono = SF Mono → JetBrains Mono.
+- Type: system SF/Helvetica stack; fallbacks via next/font: Inter (text), Inter Tight (display only — its space is too narrow for body); mono = SF Mono → JetBrains Mono.
   Display tracking −0.04 to −0.06em, body −0.01em, tabular nums for counters/dates.
 
 ## Neomorphism
