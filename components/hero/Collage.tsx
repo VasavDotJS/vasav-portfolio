@@ -69,14 +69,15 @@ export function Collage() {
       apply(s)
       play('rustle')
       gsap.fromTo(
-        el.querySelectorAll('.piece-body'),
+        el.querySelectorAll('.piece-jit'),
         { y: -24, rotation: () => gsap.utils.random(-8, 8) },
         { y: 0, rotation: 0, duration: 0.5, ease: 'steps(5)', stagger: 0.02 },
       )
     })
   }, [])
 
-  // entry drop (after the loader) + scroll peel
+  // entry drop (after the loader) + scroll peel. The drop moves .piece-jit (body, shadow
+  // copies and back together) via `transform`; the CSS jitter uses translate/rotate, so they compose.
   useEffect(() => {
     const el = root.current
     if (!el) return
@@ -85,7 +86,7 @@ export function Collage() {
       if (reduced) return
       play('rustle', { gain: 0.8 })
       gsap.fromTo(
-        el.querySelectorAll('.piece-body'),
+        el.querySelectorAll('.piece-jit'),
         { y: () => -gsap.utils.random(60, 140), rotation: () => gsap.utils.random(-14, 14) },
         { y: 0, rotation: 0, duration: 0.55, ease: 'steps(6)', stagger: { each: 0.035, from: 'random' } },
       )

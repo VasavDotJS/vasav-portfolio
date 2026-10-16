@@ -45,9 +45,11 @@ export function Providers({ children }: { children: ReactNode }) {
     // in-page anchors go through Lenis; everything else stays native
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
-      const a = (e.target as HTMLElement).closest?.('a[href^="#"]') as HTMLAnchorElement | null
+      const a = (e.target as HTMLElement).closest?.('a[href^="#"], a[href^="/#"]') as HTMLAnchorElement | null
       if (!a) return
-      const hash = a.getAttribute('href')!
+      const href = a.getAttribute('href')!
+      if (href.startsWith('/#') && location.pathname !== '/') return // let it navigate home
+      const hash = href.replace(/^\//, '')
       if (hash === '#' || hash.length < 2) return
       e.preventDefault()
       scrollToHash(hash)

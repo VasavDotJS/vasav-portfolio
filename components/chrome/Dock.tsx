@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, type ComponentType, type SVGProps } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   IconContact,
   IconGitHub,
@@ -43,6 +44,8 @@ const REACH = 110
 /** macOS-style dock: neomorphic icons that magnify with pointer distance (max 1.5×). */
 export function Dock() {
   const current = useSection()
+  // off the home page (404, /lab) section anchors need the path in front
+  const prefix = usePathname() === '/' ? '' : '/'
   const listRef = useRef<HTMLUListElement>(null)
   const raf = useRef(0)
   const pointerX = useRef<number | null>(null)
@@ -74,7 +77,7 @@ export function Dock() {
     return (
       <li key={it.label} data-dock-item className="dock-item">
         <a
-          href={it.href}
+          href={it.section ? `${prefix}${it.href}` : it.href}
           aria-label={it.label}
           aria-current={active ? 'location' : undefined}
           className="dock-btn soft is-hoverable is-pressable"

@@ -5,6 +5,7 @@
 @import './collage.css';
 @import './loader.css';
 @import './sections.css';
+@import './theme.css';
 
 @theme inline {
   --color-bg: var(--bg);

@@ -316,9 +316,9 @@
   mix-blend-mode: screen;
 }
 .scene-static {
+  /* no z-index: a stacking context here would isolate the blend from the paper */
   position: absolute;
   inset: 0 0 auto 0;
-  z-index: 0;
   pointer-events: none;
   display: grid;
   place-items: center;
@@ -329,6 +329,12 @@
   width: min(70vh, 90vw);
   height: auto;
   mix-blend-mode: multiply;
+  translate: 14vw 6vh;
+}
+@media (max-width: 767px) {
+  .scene-static__img {
+    translate: 0 22vh;
+  }
 }
 .scene-static__img.is-dark,
 [data-theme='dark'] .scene-static__img.is-light {

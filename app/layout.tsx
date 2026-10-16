@@ -2,11 +2,13 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import 'lenis/dist/lenis.css'
 import '@/styles/globals.css'
+import { Cursor } from '@/components/chrome/Cursor'
 import { Dock } from '@/components/chrome/Dock'
 import { Toaster } from '@/components/chrome/Toaster'
 import { MetaBar } from '@/components/chrome/MetaBar'
 import { Grain } from '@/components/fx/Grain'
 import { Loader } from '@/components/loader/Loader'
+import { Extras } from '@/components/providers/Extras'
 import { Providers } from '@/components/providers/Providers'
 import { SceneMount } from '@/components/three/SceneMount'
 import { headScript } from '@/lib/head-script'
@@ -76,6 +78,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Dock />
           <Toaster />
+          <Cursor />
+          <Extras />
         </Providers>
         <Grain />
       </body>

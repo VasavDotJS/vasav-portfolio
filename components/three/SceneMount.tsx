@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { markSceneReady, markSceneRequested } from '@/lib/scene-state'
 
@@ -24,6 +25,7 @@ function canWebGL() {
 }
 
 export function SceneMount() {
+  const home = usePathname() === '/'
   const [mode, setMode] = useState<'pending' | '3d' | 'static'>('pending')
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export function SceneMount() {
     else markSceneRequested()
   }, [])
 
+  if (!home) return null
   if (mode === '3d')
     return (
       <Scene

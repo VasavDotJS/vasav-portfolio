@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { profile } from '@/content/profile'
 import { Clock } from './Clock'
 import { SectionLabel } from './SectionLabel'
@@ -9,9 +10,9 @@ export function MetaBar() {
   return (
     <header className="metabar-top">
       <div className="wrap grid h-full grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
-        <a href="#top" className="metabar-name" data-cursor="top">
+        <Link href="/#top" className="metabar-name" data-cursor="top">
           {profile.name.toUpperCase()}
-        </a>
+        </Link>
         <div className="hidden justify-center md:flex">
           <SectionLabel />
         </div>

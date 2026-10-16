@@ -1080,3 +1080,12 @@ html[data-scene='static'] .desktop-backdrop {
     opacity: 0;
   }
 }
+
+.nf-404 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(140px, 30vw, 460px);
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+  rotate: -2deg;
+}

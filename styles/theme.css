@@ -1,0 +1,145 @@
+/* ---------- theme switch: the new theme prints over the old ---------- */
+
+@property --vt-rad {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+html.vt-theme {
+  view-transition-name: root;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.vt-theme::view-transition-new(root) {
+  /* solid circle ∪ (halftone dots ∩ edge band) */
+  mask-image:
+    radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-rad) - 70px), transparent calc(var(--vt-rad) - 69px)),
+    radial-gradient(circle, #000 0 42%, transparent 46%),
+    radial-gradient(
+      circle at var(--vt-x) var(--vt-y),
+      transparent calc(var(--vt-rad) - 72px),
+      #000 calc(var(--vt-rad) - 70px),
+      #000 calc(var(--vt-rad) - 35px),
+      transparent var(--vt-rad)
+    );
+  mask-size:
+    100% 100%,
+    9px 9px,
+    100% 100%;
+  mask-repeat: no-repeat, repeat, no-repeat;
+  mask-composite: add, intersect, add;
+  -webkit-mask-composite: source-over, source-in, source-over;
+  animation: vt-print 900ms var(--ease-in-out) both;
+}
+@keyframes vt-print {
+  from {
+    --vt-rad: 0px;
+  }
+  to {
+    --vt-rad: var(--vt-r);
+  }
+}
+
+/* fallback for browsers without View Transitions */
+html.theme-fade,
+html.theme-fade * {
+  transition:
+    background-color 400ms var(--ease-in-out),
+    color 400ms var(--ease-in-out),
+    border-color 400ms var(--ease-in-out),
+    box-shadow 400ms var(--ease-in-out) !important;
+}
+
+/* ---------- custom cursor (pointer: fine only) ---------- */
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 120;
+  pointer-events: none;
+  display: none;
+}
+html.has-cursor .cursor {
+  display: block;
+}
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor [data-cursor] {
+  cursor: none;
+}
+html.has-cursor input,
+html.has-cursor textarea,
+html.has-cursor [contenteditable] {
+  cursor: text;
+}
+.cursor-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.cursor-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: var(--cw, 34px);
+  height: var(--ch, 34px);
+  translate: -50% -50%;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+  transition:
+    width 260ms var(--ease-out),
+    height 260ms var(--ease-out),
+    background-color 200ms,
+    border-color 200ms,
+    box-shadow 260ms var(--ease-out),
+    opacity 200ms;
+}
+.cursor[data-label] .cursor-ring {
+  --ch: 30px;
+  border-color: transparent;
+  background-color: var(--surface);
+  box-shadow:
+    calc(var(--sx) * 4px) calc(var(--sy) * 4px) 10px var(--shadow-dark),
+    calc(var(--sx) * -4px) calc(var(--sy) * -4px) 10px var(--shadow-light),
+    inset 0 1px 0 var(--rim);
+}
+[data-theme='dark'] .cursor[data-label] .cursor-ring {
+  background-color: #141416;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+.cursor[data-label] .cursor-dot {
+  opacity: 0;
+}
+.cursor-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 12px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+.cursor[data-label] .cursor-label {
+  opacity: 1;
+}
+.cursor[data-hidden] {
+  opacity: 0;
+}
+.cursor[data-down] .cursor-ring {
+  scale: 0.9;
+}
