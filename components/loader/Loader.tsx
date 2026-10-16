@@ -141,6 +141,7 @@ export function Loader() {
     }
 
     let shown = 0
+    let prevShown = 0
     const minLoad = mode === 'short' ? 0 : 900
     const printStart = { t: -1 }
 
@@ -173,8 +174,9 @@ export function Loader() {
     let last = start
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame)
-      const dt = Math.min(0.25, (now - last) / 1000)
-      last = now
+      // rAF timestamps can precede `start`; never let dt go negative
+      const dt = Math.max(0, Math.min(0.25, (now - last) / 1000))
+      last = Math.max(last, now)
       const elapsed = now - start
       // displayed progress: chase the real target, creep while waiting, never backwards
       const real = elapsed > MAX_WAIT ? 1 : target()
@@ -183,7 +185,8 @@ export function Loader() {
       const goal = Math.min(ceiling, Math.max(real * timeCap, shown))
       // time-based chase so a busy main thread can't stall the number
       shown += (goal - shown) * (1 - Math.exp(-dt * (mode === 'short' ? 30 : 6))) + (goal > shown ? dt * 0.05 : 0)
-      shown = Math.min(shown, ceiling)
+      shown = Math.max(prevShown, Math.min(shown, ceiling, 1))
+      prevShown = shown
       if (real >= 1 && timeCap >= 1 && 1 - shown < 0.004) shown = 1
       counter.textContent = String(Math.floor(shown * 100)).padStart(3, '0')
 
@@ -225,6 +228,9 @@ export function Loader() {
       ctx.globalCompositeOperation = 'source-over'
     }
     raf = requestAnimationFrame(frame)
+    // hard failsafe: whatever happens, the overlay never outlives MAX_WAIT by much
+    const failsafe = window.setTimeout(() => exit(true), MAX_WAIT + 2500)
+    const finalFailsafe = window.setTimeout(done, MAX_WAIT + 5000)
 
     // ---------- exit: press in, sink, tear ----------
     const exit = (fast: boolean) => {
@@ -252,6 +258,8 @@ export function Loader() {
 
     return () => {
       cancelAnimationFrame(raf)
+      window.clearTimeout(failsafe)
+      window.clearTimeout(finalFailsafe)
       skipEvents.forEach((e) => window.removeEventListener(e, skip))
       window.removeEventListener('load', onLoad)
     }

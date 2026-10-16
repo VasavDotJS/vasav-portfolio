@@ -3,6 +3,7 @@ import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import 'lenis/dist/lenis.css'
 import '@/styles/globals.css'
 import { Dock } from '@/components/chrome/Dock'
+import { Toaster } from '@/components/chrome/Toaster'
 import { MetaBar } from '@/components/chrome/MetaBar'
 import { Grain } from '@/components/fx/Grain'
 import { Loader } from '@/components/loader/Loader'
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SceneMount />
           {children}
           <Dock />
+          <Toaster />
         </Providers>
         <Grain />
       </body>

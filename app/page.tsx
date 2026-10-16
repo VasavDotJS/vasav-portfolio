@@ -3,7 +3,10 @@ import { IndexSection } from '@/components/index/IndexSection'
 import { StackSection } from '@/components/stack/StackSection'
 import { Desktop } from '@/components/work/Desktop'
 import { WorkSection } from '@/components/work/WorkSection'
-import { contact } from '@/content/copy'
+import { ContactSection } from '@/components/contact/ContactSection'
+
+// GitHub "last push" data in the footer refreshes every 6 hours
+export const revalidate = 21600
 
 export default function Home() {
   return (
@@ -13,12 +16,7 @@ export default function Home() {
       <WorkSection />
       <Desktop />
       <StackSection />
-      <section id="contact" data-section="contact" className="relative min-h-svh py-24">
-        <div className="wrap">
-          <h2 className="h-section">{contact.heading.join(' ')}</h2>
-          <p className="mt-6 text-lg text-ink-muted">{contact.sub}</p>
-        </div>
-      </section>
+      <ContactSection />
     </main>
   )
 }

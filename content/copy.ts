@@ -106,6 +106,8 @@ export const contact = {
   fields: { name: 'name', email: 'email', message: 'message' },
   send: 'send',
   sending: 'sending',
+  another: 'send another',
+  social: 'elsewhere',
   sent: `sent. i'll reply from ${profile.email}.`,
   copy: 'copy email',
   copied: 'copied',
@@ -122,8 +124,11 @@ export const contact = {
 }
 
 export const footer = {
-  line: (repo: string, rel: string) =>
-    `© 2026 vasav p ramesh · built in kochi · last push: ${repo} ${rel}`,
+  copyright: '© 2026 vasav p ramesh',
+  built: 'built in kochi',
+  lastPush: 'last push',
+  repos: 'public repos',
+  writes: 'featured code by bytes',
 }
 
 export const misc = {
